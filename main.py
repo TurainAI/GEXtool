@@ -5,13 +5,14 @@
 # Converts GeoTIFF files to PNG with a 0 - 30k scale, then cuts it into tiles based on tile size.
 # GeoTIFF conversions are saved in the input_dir. Only the resulting tiles, if any, are saved in output_dir.
 #
-#  REQUIRES the gdalinfo and gdal_translate binaries to be available!
+#  Currently REQUIRES the gdalinfo and gdal_translate binaries.
+#  TODO: Remove dependency on binaries.
 #
 # Flags:
 #     "--input_dir", help="Directory containing GeoTIFF files to be GEX'd.", type=str
 #     "--output_dir", help="Directory to save the output tiles.", type=str
 #     "--tile_size", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=int
-#     "--debug", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=bool
+#     "--debug", help="Enables verbose logging.", type=bool
 #
 
 import os
