@@ -2,8 +2,8 @@
 #
 # GEX Tool - Geotiff EXtraction Tool
 #
-# Converts GeoTIFF files to PNG with a 0 - 30k scale, then cuts it into tiles based on tile size.
-# GeoTIFF conversions are saved in the input_dir. Only the resulting tiles, if any, are saved in output_dir.
+# Converts GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
+# GeoTIFF conversions are saved in the input_dir. The resulting tiles, if any, are saved in output_dir.
 #
 #  Currently REQUIRES the gdalinfo and gdal_translate binaries.
 #  TODO: Remove dependency on binaries.
@@ -12,6 +12,8 @@
 #     "--input_dir", help="Directory containing GeoTIFF files to be GEX'd.", type=str
 #     "--output_dir", help="Directory to save the output tiles.", type=str
 #     "--tile_size", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=int
+#     "--no-alpha", help="Whether to save tiles with any transparent pixels.", type=bool
+#     "--skip-tif", help="Skips GeoTIFF file processing.", type=bool
 #     "--debug", help="Enables verbose logging.", type=bool
 #
 
