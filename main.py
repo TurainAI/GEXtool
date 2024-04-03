@@ -1,3 +1,5 @@
+# Copyright 2024 - TurainAI
+#
 # GEX Tool - Geotiff EXtraction Tool
 #
 # Converts USGS GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
@@ -16,6 +18,7 @@
 #
 
 import asyncio
+import concurrent.futures
 import os
 import re
 import math
@@ -52,7 +55,7 @@ def has_transparency(img):
     return False
 
 
-async def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
+def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
     print(f"Cutting tiles from {filename}")
     filepath = os.path.join(input_dir, filename)
     img = Image.open(filepath)
@@ -81,7 +84,7 @@ async def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
     return tile_count
 
 
-async def convert_geotiff(input_dir, filename, output_dir):
+def convert_geotiff(input_dir, filename, output_dir):
     filepath = os.path.join(input_dir, filename)
     print(f"Converting: {filename}")
 
@@ -125,7 +128,7 @@ async def convert_geotiff(input_dir, filename, output_dir):
         return
 
 
-async def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
+def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
     print("Running GEXtool! Your friendly neighborhood Geotiff EXtraction tool.")
 
     # Check if output_dir exists, if not try to create it.
@@ -150,19 +153,20 @@ async def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
             print(f"{total_tif_count} TIF files found! Nice!")
 
         # Process GeoTIFFs
-        geotiff_calls = []
         loop_count = 0
         print("Processing GeoTIFFs...")
-        for filename in os.listdir(input_dir):
-            if filename.endswith(".tif"):
-                gexd_file = filename.split(',')[0] + f'{converted_suffix}.{converted_format}'
-                if os.path.isfile(gexd_file):
-                    print(f"Input file has already been GEXD: {gexd_file}")
-                else:
-                    loop_count += 1
-                    print(f"Processing {loop_count}/{total_tif_count}")
-                    geotiff_calls.append(asyncio.create_task(convert_geotiff(input_dir, filename, input_dir)))
-        await asyncio.gather(*geotiff_calls)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            geotiff_calls = []
+            for filename in os.listdir(input_dir):
+                if filename.endswith(".tif"):
+                    gexd_file = filename.split(',')[0] + f'{converted_suffix}.{converted_format}'
+                    if os.path.isfile(gexd_file):
+                        print(f"Input file has already been GEXD: {gexd_file}")
+                    else:
+                        loop_count += 1
+                        print(f"Processing {loop_count}/{total_tif_count}")
+                        geotiff_calls.append(executor.submit(convert_geotiff, input_dir, filename, input_dir))
+        concurrent.futures.as_completed(geotiff_calls)
 
     # Calculate how many GEX'd files are present in input_dir
     total_gexd_count = 0
@@ -172,14 +176,15 @@ async def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
     if total_gexd_count > 0:
         print(f"{total_gexd_count} GEX'd PNG files found.")
 
-    gex_calls = []
     # Process GEX'd files
     print("Cutting tiles from GEX'd files...")
-    for filename in os.listdir(input_dir):
-        # TODO: Once flag for scaling files is done, use it to set the expected format string in a var and call that.
-        if filename.endswith(f"{converted_suffix}_resized.{converted_format}"):
-            gex_calls.append(asyncio.create_task(cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha)))
-    await asyncio.gather(*gex_calls)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        cut_tiles_calls = []
+        for filename in os.listdir(input_dir):
+            # TODO: Once flag for scaling files is done, use it to set the expected format string in a var and call that.
+            if filename.endswith(f"{converted_suffix}_resized.{converted_format}"):
+                cut_tiles_calls.append(executor.submit(cut_tiles, input_dir, filename, output_dir, tile_size, no_alpha))
+    concurrent.futures.as_completed(cut_tiles_calls)
 
     print(f"{total_tif_count} GEX'd file(s) processed.")
     # print(f"{tile_count} tile(s) generated at {tile_size}x{tile_size}.")
@@ -213,4 +218,4 @@ if __name__ == '__main__':
         print(f"DEBUG: output_dir: {args.output_dir}")
         print(f"DEBUG: tile_size: {args.tile_size}")
 
-    asyncio.run(gextool(args.input_dir, args.output_dir, args.tile_size, args.no_alpha, args.skip_tif))
+    gextool(args.input_dir, args.output_dir, args.tile_size, args.no_alpha, args.skip_tif)
