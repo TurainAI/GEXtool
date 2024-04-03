@@ -2,7 +2,7 @@
 #
 # GEX Tool - Geotiff EXtraction Tool
 #
-# Converts GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
+# Converts USGS GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
 # GeoTIFF conversions are saved in the input_dir. The resulting tiles, if any, are saved in output_dir.
 #
 #  Currently REQUIRES the gdalinfo and gdal_translate binaries.
