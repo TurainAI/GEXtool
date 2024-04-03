@@ -1,5 +1,3 @@
-# Copyright 2024 - TurainAI
-#
 # GEX Tool - Geotiff EXtraction Tool
 #
 # Converts USGS GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
