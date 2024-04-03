@@ -7,15 +7,14 @@
 # sudo apt install gdal-bin 
 #
 # Flags:
-#     "--input_dir", help="Directory containing GeoTIFF files to be GEX'd.", type=str
+#     "--input_dir", help="Directory containing GeoTIFF files to be processed.", type=str
 #     "--output_dir", help="Directory to save the output tiles.", type=str
-#     "--tile_size", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=int
+#     "--tile_size", help="Pixel width & height of tiles to be extracted from GeoTIFFs.", type=int
 #     "--no-alpha", help="Whether to save tiles with any transparent pixels.", type=bool
-#     "--skip-tif", help="Skips GeoTIFF file processing.", type=bool
+#     "--skip-tif", help="Skips GeoTIFF file processing step.", type=bool
 #     "--debug", help="Enables verbose logging.", type=bool
 #
 
-import asyncio
 import concurrent.futures
 import os
 import re
