@@ -15,12 +15,13 @@
 #     "--debug", help="Enables verbose logging.", type=bool
 #
 
+import argparse
 import concurrent.futures
+import math
 import os
 import re
-import math
-import argparse
 import warnings
+
 from PIL import Image
 
 debug = False
@@ -118,7 +119,7 @@ def convert_geotiff(input_dir, filename, output_dir):
         img.save(os.path.join(output_dir, resize_filename))
         # Clean up non-scaled file.
         os.remove(output_path)
-        print(f"File GEXD!!! Hell yeah! {output_path}")
+        print(f"File GEXD! {output_path}")
         return output_filename
     else:
         print("Error: converted file not found! gdal_translate may have failed to complete!")
