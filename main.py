@@ -3,8 +3,8 @@
 # Converts USGS GeoTIFF files to PNG with a 0 - 30k elevation scale, and then cuts it into tiles.
 # GeoTIFF conversions are saved in the input_dir. The resulting tiles, if any, are saved in output_dir.
 #
-#  Currently REQUIRES the gdalinfo and gdal_translate binaries.
-#  TODO: Remove dependency on binaries.
+# Currently REQUIRES the gdalinfo and gdal_translate binaries:
+# sudo apt install gdal-bin 
 #
 # Flags:
 #     "--input_dir", help="Directory containing GeoTIFF files to be GEX'd.", type=str
