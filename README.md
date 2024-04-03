@@ -5,7 +5,8 @@ Converts USGS GeoTIFF files to PNG, and then cuts them into the desired tile siz
 Converted PNGs are saved next to originals in the input_dir. 
 The resulting tiles, if any, are saved in output_dir.
 
-Currently REQUIRES the gdalinfo and gdal_translate binaries. See gdal.org
+Currently requires the gdalinfo and gdal_translate binaries:
+sudo apt install gdal-bin
 
 Flags:\
 --input_dir, Directory containing GeoTIFF files to be GEX'd.\
