@@ -17,6 +17,7 @@
 #     "--debug", help="Enables verbose logging.", type=bool
 #
 
+import asyncio
 import os
 import re
 import math
@@ -53,7 +54,7 @@ def has_transparency(img):
     return False
 
 
-def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
+async def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
     print(f"Cutting tiles from {filename}")
     filepath = os.path.join(input_dir, filename)
     img = Image.open(filepath)
@@ -77,16 +78,12 @@ def cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha):
                     print(f"DEBUG: saving tile {tile_name}.{tile_format}")
                 tile_count += 1
                 tile_path = os.path.join(output_dir, f"{tile_name}.{tile_format}")
-                # Check P mode before saving as PNG.
-                # if tile_format.casefold() == "png".casefold():
-                #    if tile.mode != 'RGB':
-                #        tile = tile.convert('RGB')
                 tile.save(tile_path)
 
     return tile_count
 
 
-def convert_geotiff(input_dir, filename, output_dir):
+async def convert_geotiff(input_dir, filename, output_dir):
     filepath = os.path.join(input_dir, filename)
     print(f"Converting: {filename}")
 
@@ -130,7 +127,7 @@ def convert_geotiff(input_dir, filename, output_dir):
         return
 
 
-def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
+async def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
     print("Running GEXtool! Your friendly neighborhood Geotiff EXtraction tool.")
 
     # Check if output_dir exists, if not try to create it.
@@ -155,6 +152,7 @@ def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
             print(f"{total_tif_count} TIF files found! Nice!")
 
         # Process GeoTIFFs
+        geotiff_calls = []
         loop_count = 0
         print("Processing GeoTIFFs...")
         for filename in os.listdir(input_dir):
@@ -165,8 +163,8 @@ def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
                 else:
                     loop_count += 1
                     print(f"Processing {loop_count}/{total_tif_count}")
-                    convert_geotiff(input_dir, filename, input_dir)  # Saves to the input_dir
-
+                    geotiff_calls.append(asyncio.create_task(convert_geotiff(input_dir, filename, input_dir)))
+        await asyncio.gather(*geotiff_calls)
 
     # Calculate how many GEX'd files are present in input_dir
     total_gexd_count = 0
@@ -176,17 +174,17 @@ def gextool(input_dir, output_dir, tile_size, no_alpha, skip_tif):
     if total_gexd_count > 0:
         print(f"{total_gexd_count} GEX'd PNG files found.")
 
-    tile_count = 0
+    gex_calls = []
     # Process GEX'd files
     print("Cutting tiles from GEX'd files...")
     for filename in os.listdir(input_dir):
-        # TODO: Once flag for scaling GEX'd files is done, use it to set the expected format string in a var and call that.
+        # TODO: Once flag for scaling files is done, use it to set the expected format string in a var and call that.
         if filename.endswith(f"{converted_suffix}_resized.{converted_format}"):
-            count = cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha)
-            tile_count += count
+            gex_calls.append(asyncio.create_task(cut_tiles(input_dir, filename, output_dir, tile_size, no_alpha)))
+    await asyncio.gather(*gex_calls)
 
     print(f"{total_tif_count} GEX'd file(s) processed.")
-    print(f"{tile_count} tile(s) generated at {tile_size}x{tile_size}.")
+    # print(f"{tile_count} tile(s) generated at {tile_size}x{tile_size}.")
     if no_alpha:
         print("Tiles were NOT allowed to have any pixels with alpha transparency.")
     else:
@@ -217,4 +215,4 @@ if __name__ == '__main__':
         print(f"DEBUG: output_dir: {args.output_dir}")
         print(f"DEBUG: tile_size: {args.tile_size}")
 
-    gextool(args.input_dir, args.output_dir, args.tile_size, args.no_alpha, args.skip_tif)
+    asyncio.run(gextool(args.input_dir, args.output_dir, args.tile_size, args.no_alpha, args.skip_tif))
