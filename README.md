@@ -1,5 +1,5 @@
 # GEXtool
-GEX Tool - Geotiff EXtraction Tool
+GEX Tool - GeoTIFF Extraction Tool
 
 Converts USGS GeoTIFF files to PNG, and then cuts them into the desired tile sizes for training.
 Converted PNGs are saved next to originals in the input_dir. 
