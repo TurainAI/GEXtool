@@ -211,9 +211,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     debug = args.debug
 
-    if debug:
-        print(f"DEBUG: input_dir: {args.input_dir}")
-        print(f"DEBUG: output_dir: {args.output_dir}")
-        print(f"DEBUG: tile_size: {args.tile_size}")
-
     gextool(args.input_dir, args.output_dir, args.tile_size, args.no_alpha, args.skip_tif)
