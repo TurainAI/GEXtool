@@ -9,7 +9,7 @@
 # Flags:
 #     "--input_dir", help="Directory containing GeoTIFF files to be processed.", type=str
 #     "--output_dir", help="Directory to save the output tiles.", type=str
-#     "--tile_size", help="Pixel width & height of tiles to be extracted from GeoTIFFs.", type=int
+#     "--tile-size", help="Pixel width & height of tiles to be extracted from GeoTIFFs.", type=int
 #     "--no-alpha", help="Whether to save tiles with any transparent pixels.", type=bool
 #     "--skip-tif", help="Skips GeoTIFF file processing step.", type=bool
 #     "--debug", help="Enables verbose logging.", type=bool
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", help="Directory containing GeoTIFF files to be GEX'd.", type=str)
     parser.add_argument("--output_dir", help="Directory to save the output tiles.", type=str)
-    parser.add_argument("--tile_size", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=int)
+    parser.add_argument("--tile-size", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=int)
     parser.add_argument("--debug", help="Pixel width/height of tiles to be extracted from GeoTIFFs.", type=bool)
     parser.add_argument("--no-alpha", help="Whether to allow resulting tiles to contain any transparent pixels.",
                         type=bool)
